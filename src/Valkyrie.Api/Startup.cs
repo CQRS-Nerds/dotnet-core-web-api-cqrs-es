@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -39,7 +40,21 @@ namespace Valkyrie.Api
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
-            services.AddApiVersioning( options => options.ReportApiVersions = true );
+            services.AddApiVersioning( 
+                options => 
+                {
+                    options.DefaultApiVersion = new ApiVersion(1, 0);
+                    
+                    var versionString = "api-version";
+                    
+                    options.ApiVersionReader = ApiVersionReader.Combine(
+                        new QueryStringApiVersionReader(versionString),
+                        new HeaderApiVersionReader(versionString),
+                        new MediaTypeApiVersionReader(versionString)
+                    );
+                    options.ReportApiVersions = true;
+                }
+            );
 
             services.AddSwaggerGen(
                 options =>
@@ -72,7 +87,7 @@ namespace Valkyrie.Api
         {
             loggerFactory.AddConsole( Configuration.GetSection( "Logging" ) );
             loggerFactory.AddDebug();
-            
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

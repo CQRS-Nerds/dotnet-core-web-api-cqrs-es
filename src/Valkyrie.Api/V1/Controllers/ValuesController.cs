@@ -4,10 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Valkyrie.Api.Controllers
+namespace Valkyrie.Api.V1.Controllers
 {
+    [ApiVersion( "1.0" )]
+    [ApiVersion( "0.9", Deprecated = true )]
     [Route("api/[controller]")]
-    [ApiController]
     public class ValuesController : ControllerBase
     {
         // GET api/values
